@@ -8,7 +8,6 @@ import os
 import glob
 import random
 
-# --- 1. [수정] 데이터 증강(Augmentation)이 포함된 Transform 정의 ---
 # 학습 시 Anchor/Negative에 적용할 기본 변환
 transform_basic = transforms.Compose([
     transforms.Resize((128, 128)),
@@ -16,26 +15,25 @@ transform_basic = transforms.Compose([
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 ])
 
-# 학습 시 Positive 샘플에만 적용할 '데이터 증강' 변환
-# (원본과 약간 다르게 보이도록 노이즈 추가)
+# 학습 시 Positive 샘플에만 적용할 데이터 증강 변환
 transform_augmented = transforms.Compose([
     transforms.Resize((128, 128)),
-    # [추가] 약간의 색상, 밝기 변형
+    # 약간의 색상, 밝기 변형
     transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.1),
-    # [추가] 5% 확률로 수평 뒤집기 (의미가 있을지는 모르나 일반적인 증강)
+    # 5% 확률로 수평 뒤집기 (의미가 있을지는 모르나 일반적인 증강)
     transforms.RandomHorizontalFlip(p=0.05),
-    # [추가] 10% 확률로 랜덤하게 10% 픽셀 가리기 (cutout)
+    # 10% 확률로 랜덤하게 10% 픽셀 가리기
     transforms.ToTensor(),
     transforms.RandomErasing(p=0.1, scale=(0.02, 0.1), ratio=(0.3, 3.3)),
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 ])
 
 
-# --- 2. [수정] Dataset 클래스 (데이터 증강 적용) ---
+# Dataset 클래스
 class TripletSongSegmentDataset(Dataset):
     def __init__(self, data_dir, transform_basic, transform_augmented):
         self.data_dir = data_dir
-        # [수정] 2개의 transform을 받음
+        # 2개의 transform을 받음
         self.transform_basic = transform_basic
         self.transform_augmented = transform_augmented 
         
@@ -53,27 +51,25 @@ class TripletSongSegmentDataset(Dataset):
         return len(self.intros)
 
     def _load_segment(self, image_paths, transform_to_apply):
-        # [수정] 어떤 transform을 적용할지 인자로 받음
+        # 어떤 transform을 적용할지 인자로 받음
         images = []
         for img_path in image_paths:
             image = Image.open(img_path).convert("RGB")
-            # [수정] 지정된 transform 적용
+            # 지정된 transform 적용
             image = transform_to_apply(image)
             images.append(image)
         return torch.stack(images)
 
     def __getitem__(self, idx):
-        # 1. Anchor (기준): idx번째 인트로 (기본 변환)
+        # 1. Anchor : idx번째 인트로
         anchor_paths = self.intros[idx]
         anchor = self._load_segment(anchor_paths, self.transform_basic)
         
-        # --- [핵심 수정] ---
-        # 2. Positive (긍정): *똑같은 idx번째* 인트로 (증강 변환)
-        # (Anchor와 Positive는 같은 원본 이미지이지만, 증강 때문에 텐서 값은 다름)
+        # 2. Positive : 똑같은 인트로
         positive_paths = self.intros[idx] 
         positive = self._load_segment(positive_paths, self.transform_augmented)
         
-        # 3. Negative (부정): *다른* 인트로 (기본 변환)
+        # 3. Negative : 인트로
         negative_idx = idx
         while negative_idx == idx:
             negative_idx = random.randint(0, len(self.intros) - 1)
@@ -122,26 +118,26 @@ class CRNN_Metric(nn.Module):
 
 if __name__ == '__main__':
     IMAGE_SIZE = (128, 128)
-    BATCH_SIZE = 32 # (이전 대화에서 32로 늘렸으므로 유지)
+    BATCH_SIZE = 32
     EPOCHS = 50
     EMBEDDING_DIM = 512
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # ... (GPU 확인, num_workers 설정 등은 동일) ...
+    # GPU 사용중인지 확인하기 위한 코드
     print(f"현재 학습에 사용 중인 장치: {DEVICE}")
     total_cores = os.cpu_count() or 1
     num_workers = max(1, total_cores - 2)
     print(f"데이터 로딩에 {num_workers}개의 CPU 워커를 사용합니다.")
 
 
-    # [수정] Dataset 생성 시 2개의 transform 전달
+    # Dataset 생성 시 2개의 transform 전달
     train_dataset = TripletSongSegmentDataset(
         data_dir='dataset/train', 
         transform_basic=transform_basic, 
         transform_augmented=transform_augmented
     )
     
-    # [수정] DataLoader 생성 (num_workers, pin_memory 적용)
+    # DataLoader 생성 (num_workers, pin_memory 적용)
     train_loader = DataLoader(
         train_dataset, 
         batch_size=BATCH_SIZE, 
@@ -150,12 +146,11 @@ if __name__ == '__main__':
         pin_memory=True
     )
 
-    # [수정] 검증(Validation) 데이터 로더 추가
-    # (검증 시에는 데이터 증강을 사용하지 않음)
+    # 검증(Validation) 데이터 로더 추가
     val_dataset = TripletSongSegmentDataset(
         data_dir='dataset/val', 
         transform_basic=transform_basic, 
-        transform_augmented=transform_basic # [중요] 검증 시에는 증강 안 함
+        transform_augmented=transform_basic # 검증 시에는 증강 안 함
     )
     val_loader = DataLoader(
         val_dataset,
@@ -166,18 +161,17 @@ if __name__ == '__main__':
     )
     print(f"훈련 데이터: {len(train_dataset)}개 세트, 검증 데이터: {len(val_dataset)}개 세트")
 
-    # ... (모델, 손실함수, 옵티마이저 설정은 동일) ...
+    # 모델, 손실함수, 옵티마이저 설정
     model = CRNN_Metric(embedding_dim=EMBEDDING_DIM).to(DEVICE)
     criterion = nn.TripletMarginLoss(margin=1.0)
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
-    # ... (최적 모델 저장을 위한 변수) ...
+    # 최적 모델 저장을 위한 변수
     best_val_loss = float('inf')
 
-    print("거리 학습(Metric Learning) 시작 (데이터 증강 ver.)...")
+    print("학습 시작 (데이터 증강 ver.)...")
     
     for epoch in range(EPOCHS):
-        # --- 훈련(Training) 단계 ---
         model.train()
         total_train_loss = 0
         
@@ -198,7 +192,7 @@ if __name__ == '__main__':
         
         avg_train_loss = total_train_loss / len(train_loader)
 
-        # --- 검증(Validation) 단계 ---
+        # 검증 단계
         model.eval()
         total_val_loss = 0
         

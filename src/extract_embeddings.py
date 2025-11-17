@@ -7,8 +7,7 @@ import glob
 import pickle
 import numpy as np
 
-# --- 1. [필수] 학습 코드에서 CRNN_Metric 클래스 정의 복사 ---
-# (이 부분이 없으면 model.load_state_dict에서 오류 발생)
+# CRNN_Metric 클래스 정의 
 class CRNN_Metric(nn.Module):
     def __init__(self, rnn_hidden_size=256, embedding_dim=512):
         super(CRNN_Metric, self).__init__()
@@ -35,9 +34,9 @@ class CRNN_Metric(nn.Module):
         embedding = nn.functional.normalize(embedding, p=2, dim=1)
         return embedding
 
-# --- 2. 이미지 로딩 헬퍼 함수 (학습 코드에서 가져옴) ---
+# 이미지 로딩 헬퍼 함수
+# 4개의 이미지 경로 리스트를 받아 하나의 시퀀스 텐서로 만듦
 def _load_segment(image_paths, transform):
-    """4개의 이미지 경로 리스트를 받아 하나의 시퀀스 텐서로 만듦"""
     images = []
     for img_path in image_paths:
         try:
@@ -54,9 +53,7 @@ def _load_segment(image_paths, transform):
         
     return torch.stack(images)
 
-# --- 3. 메인 추출 스크립트 ---
 if __name__ == '__main__':
-    # --- 설정 ---
     IMAGE_SIZE = (128, 128)
     EMBEDDING_DIM = 512
     MODEL_PATH = r'C:\CNN-based-Music-Classification-and-Recommendation\src\crnn_metric_model_best.pth' # 학습된 모델 경로
@@ -66,19 +63,18 @@ if __name__ == '__main__':
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {DEVICE}")
 
-    # --- 변환(Transform) 정의 ---
     transform = transforms.Compose([
         transforms.Resize(IMAGE_SIZE),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
 
-    # --- 모델 로드 ---
+    # 모델 로드
     model = CRNN_Metric(embedding_dim=EMBEDDING_DIM).to(DEVICE)
     model.load_state_dict(torch.load(MODEL_PATH))
     model.eval() # [중요] 평가 모드로 설정
 
-    # --- 모든 노래 폴더 검색 ---
+    # 모든 노래 폴더 검색
     all_song_folders = []
     for data_dir in DATA_DIRS:
         folders = [os.path.join(data_dir, d) for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
@@ -86,7 +82,7 @@ if __name__ == '__main__':
     
     print(f"총 {len(all_song_folders)}개의 노래 폴더를 찾았습니다.")
 
-    # --- 임베딩 추출 ---
+    # 임베딩 추출
     all_embeddings = {}
     
     with torch.no_grad(): # 기울기 계산 비활성화
@@ -125,7 +121,7 @@ if __name__ == '__main__':
             except Exception as e:
                 print(f"  -> [{song_name}] 임베딩 추출 오류: {e}")
 
-    # --- 파일로 저장 ---
+    # 파일로 저장
     with open(OUTPUT_FILE, 'wb') as f:
         pickle.dump(all_embeddings, f)
         

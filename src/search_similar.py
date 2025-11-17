@@ -72,7 +72,6 @@ if __name__ == '__main__':
     if not song_names:
         print("임베딩이 비어있어 검색을 실행할 수 없습니다.")
     else:
-        # --- [수정된 부분 시작] ---
         
         # 1. 사용자에게 검색할 노래 이름을 입력받음
         print("\n--- 유사도 검색 ---")
@@ -90,5 +89,3 @@ if __name__ == '__main__':
                 
             # 3. 입력받은 이름으로 검색 함수 호출
             find_similar_intros(QUERY_SONG)
-            
-        # --- [수정된 부분 끝] ---
