@@ -1,2 +1,5 @@
 music/
 dataset/
+dataset_chroma/
+dataset_preprocessed/
+dataset_preprocessed_chroma/

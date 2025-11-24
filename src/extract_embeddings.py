@@ -21,7 +21,7 @@ class CRNN_Metric(nn.Module):
         )
         self.rnn = nn.LSTM(input_size=8192, hidden_size=rnn_hidden_size, num_layers=2, 
                            batch_first=True, bidirectional=True)
-        self.embedding_layer = nn.Linear(rnn_hidden_size * 2, embedding_dim)
+        self.embedding = nn.Linear(rnn_hidden_size * 2, embedding_dim)
 
     def forward(self, x):
         batch_size, seq_len, C, H, W = x.size()
@@ -30,7 +30,7 @@ class CRNN_Metric(nn.Module):
         r_in = c_out.view(batch_size, seq_len, -1)
         r_out, _ = self.rnn(r_in)
         r_out_pooled = r_out.mean(dim=1)
-        embedding = self.embedding_layer(r_out_pooled)
+        embedding = self.embedding(r_out_pooled)
         embedding = nn.functional.normalize(embedding, p=2, dim=1)
         return embedding
 
