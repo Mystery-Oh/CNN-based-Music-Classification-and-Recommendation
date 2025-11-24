@@ -98,7 +98,7 @@ def process_mp3_to_dataset(file_path, base_output_dir):
 
 if __name__ == "__main__":
     root_dir_to_search = "." # MP3 파일을 찾을 시작 폴더
-    train_data_dir = os.path.join("dataset", "train") # 최종 데이터셋이 저장될 위치
+    train_data_dir = os.path.join("dataset_chroma", "train") # 최종 데이터셋이 저장될 위치
     
     os.makedirs(train_data_dir, exist_ok=True)
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         num_cores_to_use = max(1, total_cores - 2) 
         
         print(f"총 CPU 코어: {total_cores}개")
-        print(f"시스템 응답성을 위해 2개를 제외한 {num_cores_to_use}개의 코어를 사용하여 병렬 처리를 시작합니다...")
+        print(f"{num_cores_to_use}개의 코어를 사용하여 병렬 처리를 시작합니다...")
 
         Parallel(n_jobs=num_cores_to_use)(
             delayed(process_mp3_to_dataset)(mp3_file_path, train_data_dir) 
