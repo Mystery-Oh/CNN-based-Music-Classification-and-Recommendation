@@ -1,3 +1,5 @@
 music/
 data/
 metadata/
+*.npz
+*.pth
