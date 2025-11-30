@@ -1,0 +1,70 @@
+{
+  "songs": [
+    {
+      "title": "00. DAY6 - INSIDE OUT",
+      "dir": "/spectrograms/00. DAY6 - INSIDE OUT",
+      "slices": [
+        "00. DAY6 - INSIDE OUT_sec_0-5.png",
+        "00. DAY6 - INSIDE OUT_sec_10-15.png",
+        "00. DAY6 - INSIDE OUT_sec_5-10.png"
+      ],
+      "sections": {
+        "intro": [
+          "00. DAY6 - INSIDE OUT_intro_0-5.png",
+          "00. DAY6 - INSIDE OUT_intro_5-10.png",
+          "00. DAY6 - INSIDE OUT_intro_10-15.png",
+          "00. DAY6 - INSIDE OUT_intro_15-20.png"
+        ],
+        "verse": [
+          "00. DAY6 - INSIDE OUT_verse_20-25.png",
+          "00. DAY6 - INSIDE OUT_verse_25-30.png",
+          "00. DAY6 - INSIDE OUT_verse_30-35.png",
+          "00. DAY6 - INSIDE OUT_verse_35-40.png"
+        ],
+        "chorus": [
+          "00. DAY6 - INSIDE OUT_chorus_40-45.png",
+          "00. DAY6 - INSIDE OUT_chorus_45-50.png",
+          "00. DAY6 - INSIDE OUT_chorus_50-55.png",
+          "00. DAY6 - INSIDE OUT_chorus_55-60.png",
+          "00. DAY6 - INSIDE OUT_chorus_60-65.png",
+          "00. DAY6 - INSIDE OUT_chorus_65-70.png",
+          "00. DAY6 - INSIDE OUT_chorus_70-75.png",
+          "00. DAY6 - INSIDE OUT_chorus_75-80.png"
+        ]
+      }
+    },
+    {
+      "title": "00. HAECHAN - CRZY",
+      "dir": "/spectrograms/00. HAECHAN - CRZY",
+      "slices": [
+        "00. HAECHAN - CRZY_sec_0-5.png",
+        "00. HAECHAN - CRZY_sec_5-10.png",
+        "00. HAECHAN - CRZY_sec_10-15.png"
+      ],
+      "sections": {
+        "intro": [
+          "00. HAECHAN - CRZY_intro_0-5.png",
+          "00. HAECHAN - CRZY_intro_5-10.png",
+          "00. HAECHAN - CRZY_intro_10-15.png",
+          "00. HAECHAN - CRZY_intro_15-20.png"
+        ],
+        "verse": [
+          "00. HAECHAN - CRZY_verse_20-25.png",
+          "00. HAECHAN - CRZY_verse_25-30.png",
+          "00. HAECHAN - CRZY_verse_30-35.png",
+          "00. HAECHAN - CRZY_verse_35-40.png"
+        ],
+        "chorus": [
+          "00. HAECHAN - CRZY_chorus_40-45.png",
+          "00. HAECHAN - CRZY_chorus_45-50.png",
+          "00. HAECHAN - CRZY_chorus_50-55.png",
+          "00. HAECHAN - CRZY_chorus_55-60.png",
+          "00. HAECHAN - CRZY_chorus_60-65.png",
+          "00. HAECHAN - CRZY_chorus_65-70.png",
+          "00. HAECHAN - CRZY_chorus_70-75.png",
+          "00. HAECHAN - CRZY_chorus_75-80.png"
+        ]
+      }
+    }
+  ]
+}
